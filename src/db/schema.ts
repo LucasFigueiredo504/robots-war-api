@@ -1,3 +1,5 @@
-import { usersTable } from "./schema/user";
+import { playersTable } from "./schema/player";
+import { gamesTable } from "./schema/game";
+import { unitsTable } from "./schema/unit";
 
-export { usersTable };
+export { playersTable, gamesTable, unitsTable };
