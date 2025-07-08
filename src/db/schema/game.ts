@@ -1,14 +1,23 @@
 import { relations } from "drizzle-orm";
-import { integer, numeric, pgTable, varchar } from "drizzle-orm/pg-core";
+import {
+  integer,
+  numeric,
+  pgTable,
+  timestamp,
+  varchar,
+} from "drizzle-orm/pg-core";
 import { playersTable } from "./player";
 
 export const gamesTable = pgTable("games", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  gold: numeric().default("0"),
-  metal: numeric().default("0"),
-  fuel: numeric().default("0"),
-  level: numeric().default("0"),
-  player_id: varchar().notNull().unique(),
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  gold: numeric("gold").default("0"),
+  metal: numeric("metl").default("0"),
+  fuel: numeric("fuel").default("0"),
+  level: numeric("level").default("0"),
+  lastOnline: timestamp("lst_online").defaultNow(),
+  lastTimeBaseSpawned: timestamp("last_time_base_spawned").defaultNow(),
+  unlockedUnits: varchar("unlocked_units", { length: 100 }).array().default([]),
+  player_id: varchar("player_id").notNull().unique(),
 });
 
 export const gamesRelations = relations(gamesTable, ({ one }) => ({

@@ -9,15 +9,17 @@ import {
 import { gamesTable } from "./game";
 
 export const unitsTable = pgTable("units", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  pos_x: numeric().notNull(),
-  pos_y: numeric().notNull(),
-  level: numeric().notNull(),
-  current_hp: numeric().notNull(),
-  type: varchar().notNull(),
-  resource_amount: numeric().notNull(),
-  available: boolean().default(true),
-  game_id: varchar().notNull(),
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  pos_x: numeric("pos_x").notNull(),
+  pos_y: numeric("pos_y").notNull(),
+  level: numeric("level").notNull(),
+  current_hp: numeric("current_hp").notNull(),
+  current_level: numeric("current_level").notNull(),
+  type: varchar("type").notNull(),
+  resource_amount: numeric("resource_amount").notNull(),
+  isReady: boolean("is_ready").default(true),
+  available: boolean("available").default(true),
+  game_id: varchar("game_id").notNull(),
 });
 
 export const unitsRelation = relations(unitsTable, ({ one }) => ({

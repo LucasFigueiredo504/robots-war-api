@@ -3,10 +3,10 @@ import { integer, pgTable, varchar } from "drizzle-orm/pg-core";
 import { gamesTable } from "./game";
 
 export const playersTable = pgTable("players", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  userName: varchar({ length: 255 }).notNull(),
-  email: varchar({ length: 255 }).notNull().unique(),
-  password_hash: varchar({ length: 255 }).notNull(),
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  userName: varchar("user_name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  password_hash: varchar("password", { length: 255 }).notNull(),
 });
 
 export const playersRelations = relations(playersTable, ({ one }) => ({
