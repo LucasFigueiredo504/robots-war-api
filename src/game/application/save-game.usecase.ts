@@ -1,17 +1,14 @@
 import { eq } from "drizzle-orm";
 import { db } from "../../db";
 import { unitsTable } from "../../db/schema";
+import { GameData, GameRepository } from "../infra/game-repository";
 
-export async function saveGame(unitId: number) {
+export async function saveGameUseCase(data: GameData) {
   try {
-    const unit = db.select().from(unitsTable).where(eq(unitsTable.id, unitId));
+    await GameRepository.saveGame(data);
 
-    if (!unit) {
-      return { message: "error" };
-    }
-
-    return { message: "success", data: unit };
+    return { status: 200, message: "success" };
   } catch (error) {
-    return { message: "error" };
+    return { status: 500, message: "error" };
   }
 }
