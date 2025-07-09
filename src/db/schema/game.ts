@@ -16,7 +16,8 @@ export const gamesTable = pgTable("games", {
   level: numeric("level").default("0"),
   lastOnline: timestamp("lst_online").defaultNow(),
   lastTimeBaseSpawned: timestamp("last_time_base_spawned").defaultNow(),
-  unlockedUnits: varchar("unlocked_units", { length: 100 }).array().default([]),
+  unlockedUnits: numeric("unlocked_units").array().default([]),
+  ownedUnits: integer("owned_units").array().default([]),
   player_id: varchar("player_id").notNull().unique(),
 });
 

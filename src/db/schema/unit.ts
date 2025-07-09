@@ -19,7 +19,7 @@ export const unitsTable = pgTable("units", {
   resource_amount: numeric("resource_amount").notNull(),
   isReady: boolean("is_ready").default(true),
   available: boolean("available").default(true),
-  game_id: varchar("game_id").notNull(),
+  game_id: integer("game_id").notNull(),
 });
 
 export const unitsRelation = relations(unitsTable, ({ one }) => ({
