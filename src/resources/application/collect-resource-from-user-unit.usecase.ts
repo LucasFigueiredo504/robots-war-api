@@ -11,19 +11,26 @@ export async function collectResourceFromUserUnit(
     if (!unit) {
       return { status: 404, message: "not found" };
     }
-    const game = await GameRepository.getGame(gameId);
-    if (!game) {
-      return { status: 404, message: "game not found" };
-    }
+
+    const accumulatedAmount = unit.resourceAmount;
 
     switch (collectorId) {
       case 1:
-        await ResourcesRepository.updateGoldAmount(200, collectorId);
+        await ResourcesRepository.updateGoldAmount(
+          Number(accumulatedAmount),
+          collectorId
+        );
         break;
       case 2:
-        await ResourcesRepository.updateFuelAmount(200, collectorId);
+        await ResourcesRepository.updateFuelAmount(
+          Number(accumulatedAmount),
+          collectorId
+        );
       default:
-        await ResourcesRepository.updateMetaldAmount(200, collectorId);
+        await ResourcesRepository.updateMetaldAmount(
+          Number(accumulatedAmount),
+          collectorId
+        );
         break;
     }
 

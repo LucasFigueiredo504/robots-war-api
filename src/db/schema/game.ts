@@ -18,12 +18,12 @@ export const gamesTable = pgTable("games", {
   lastTimeBaseSpawned: timestamp("last_time_base_spawned").defaultNow(),
   unlockedUnits: numeric("unlocked_units").array().default([]),
   ownedUnits: integer("owned_units").array().default([]),
-  player_id: varchar("player_id").notNull().unique(),
+  playerId: varchar("player_id").notNull().unique(),
 });
 
 export const gamesRelations = relations(gamesTable, ({ one }) => ({
   player: one(playersTable, {
-    fields: [gamesTable.player_id],
+    fields: [gamesTable.playerId],
     references: [playersTable.id],
   }),
 }));

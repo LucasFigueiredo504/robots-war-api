@@ -4,27 +4,29 @@ import {
   integer,
   numeric,
   pgTable,
+  timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
 import { gamesTable } from "./game";
 
 export const unitsTable = pgTable("units", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-  pos_x: numeric("pos_x").notNull(),
-  pos_y: numeric("pos_y").notNull(),
+  posX: numeric("pos_x").notNull(),
+  posY: numeric("pos_y").notNull(),
   level: numeric("level").notNull(),
-  current_hp: numeric("current_hp").notNull(),
-  current_level: numeric("current_level").notNull(),
-  type: varchar("type").notNull(),
-  resource_amount: numeric("resource_amount").notNull(),
+  currentHp: numeric("current_hp").notNull(),
+  currentLevel: numeric("current_level").notNull(),
+  typeId: varchar("type_id").notNull(),
+  resourceAmount: numeric("resource_amount").notNull(),
+  lastTimeCollected: timestamp("last_time_collected").defaultNow(),
   isReady: boolean("is_ready").default(true),
   available: boolean("available").default(true),
-  game_id: integer("game_id").notNull(),
+  gameId: integer("game_id").notNull(),
 });
 
 export const unitsRelation = relations(unitsTable, ({ one }) => ({
   game: one(gamesTable, {
-    fields: [unitsTable.game_id],
+    fields: [unitsTable.gameId],
     references: [gamesTable.id],
   }),
 }));

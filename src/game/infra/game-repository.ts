@@ -4,16 +4,17 @@ import { gamesTable, unitsTable } from "../../db/schema";
 
 export type UnitRecord = {
   id: number;
-  pos_x: string;
-  pos_y: string;
+  posX: string;
+  posY: string;
   level: string;
-  current_hp: string;
-  current_level: string;
-  type: string;
-  resource_amount: string;
+  currentHp: string;
+  currentLevel: string;
+  typeId: string;
+  resourceAmount: string;
   isReady: boolean | null;
   available: boolean | null;
-  game_id: number;
+  lastTimeCollected?: Date | null;
+  gameId: number;
 };
 export type GameData = {
   id: number;
@@ -25,10 +26,42 @@ export type GameData = {
   lastTimeBaseSpawned?: Date | null;
   unlockedUnits?: string[] | null;
   ownedUnits?: number[] | null;
-  player_id: string;
+  playerId: string;
 };
 
 export class GameRepository {
+  static async getGameUnitsyByGameId(
+    gameId: number
+  ): Promise<UnitRecord[] | null> {
+    const game = await db
+      .select({
+        id: gamesTable.id,
+        ownedUnits: gamesTable.ownedUnits,
+      })
+      .from(gamesTable)
+      .where(eq(gamesTable.id, gameId))
+      .then((res) => res[0]);
+
+    if (!game) {
+      throw new Error("Game not found");
+    }
+
+    const unit = await db
+      .select()
+      .from(unitsTable)
+      .where(
+        and(
+          inArray(unitsTable.id, game.ownedUnits ?? []),
+          eq(unitsTable.gameId, gameId)
+        )
+      );
+
+    if (!unit || unit.length === 0) {
+      throw new Error("Unit not found");
+    }
+
+    return unit;
+  }
   static async getGameUnityById(
     unitId: number,
     gameId: number
@@ -53,7 +86,7 @@ export class GameRepository {
         and(
           eq(unitsTable.id, unitId),
           inArray(unitsTable.id, game.ownedUnits ?? []),
-          eq(unitsTable.game_id, gameId)
+          eq(unitsTable.gameId, gameId)
         )
       );
 
@@ -88,5 +121,25 @@ export class GameRepository {
       return null;
     }
     return result[0];
+  }
+  static async getGameByPlayerId(playerId: string): Promise<GameData | null> {
+    const result = await db
+      .select()
+      .from(gamesTable)
+      .where(eq(gamesTable.playerId, playerId));
+
+    if (!result || result.length === 0) {
+      return null;
+    }
+    return result[0];
+  }
+  static async updateUnitResourcesAmount(
+    unitId: number,
+    amount: number
+  ): Promise<void> {
+    await db
+      .update(unitsTable)
+      .set({ resourceAmount: String(amount) })
+      .where(eq(unitsTable.id, unitId));
   }
 }
