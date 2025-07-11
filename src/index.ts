@@ -1,6 +1,11 @@
 import fastify from "fastify";
+import jwt from "@fastify/jwt";
 
 export const app = fastify();
+
+app.register(jwt, {
+  secret: process.env.JWT_SECRET || "supersecret",
+});
 
 const PORT = process.env.PORT || 3333;
 
