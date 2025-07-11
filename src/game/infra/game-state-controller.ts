@@ -23,3 +23,6 @@ app.get("/game/load", async (request: FastifyRequest, reply: FastifyReply) => {
   }
   return reply.status(200).send({ message: "success", data: result });
 });
+app.get("/game/alive", async (request: FastifyRequest, reply: FastifyReply) => {
+  return reply.status(200).send({ message: "I am alive" });
+});
