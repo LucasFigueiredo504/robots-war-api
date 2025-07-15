@@ -1,6 +1,6 @@
 {
-  "id": "bffd57a5-5ec4-4b27-be84-698e83e940b2",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "b3e914ab-5302-4f9b-8f24-47b5afecb329",
+  "prevId": "bffd57a5-5ec4-4b27-be84-698e83e940b2",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -213,6 +213,12 @@
         },
         "type_id": {
           "name": "type_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "instance_id": {
+          "name": "instance_id",
           "type": "varchar",
           "primaryKey": false,
           "notNull": true
