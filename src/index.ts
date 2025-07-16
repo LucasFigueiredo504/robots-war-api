@@ -1,6 +1,7 @@
 import fastify, { FastifyRequest } from "fastify";
 import jwt from "@fastify/jwt";
 import fastifyRateLimit from "@fastify/rate-limit";
+import "dotenv/config";
 
 export const app = fastify();
 

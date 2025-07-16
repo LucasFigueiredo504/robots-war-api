@@ -98,21 +98,25 @@ export class GameRepository {
 
     return unit[0];
   }
-  static async createGame(data: GameData): Promise<void> {
-    // Insere o jogo no banco
-    await db.insert(gamesTable).values({
-      gold: data.gold,
-      metal: data.metal,
-      fuel: data.fuel,
-      level: data.level,
-      lastOnline: data.lastOnline,
-      lastTimeBaseSpawned: data.lastTimeBaseSpawned,
-      unlockedUnits: data.unlockedUnits,
-      ownedUnits: data.ownedUnits,
-      playerId: data.playerId,
-    });
+  static async createGame(data: GameData): Promise<number> {
+    const [created] = await db
+      .insert(gamesTable)
+      .values({
+        gold: data.gold,
+        metal: data.metal,
+        fuel: data.fuel,
+        level: data.level,
+        lastOnline: data.lastOnline,
+        lastTimeBaseSpawned: data.lastTimeBaseSpawned,
+        unlockedUnits: data.unlockedUnits,
+        ownedUnits: data.ownedUnits,
+        playerId: data.playerId,
+      })
+      .returning({ id: gamesTable.id });
 
-    // Insere as unidades (se houver)
+    const newGameId = created.id;
+
+    // Agora que você tem o ID certo, pode criar as unidades
     if (data.units && data.units.length > 0) {
       for (const unit of data.units) {
         await db.insert(unitsTable).values({
@@ -127,10 +131,12 @@ export class GameRepository {
           lastTimeCollected: unit.lastTimeCollected,
           isReady: unit.isReady,
           available: unit.available,
-          gameId: data.id,
+          gameId: newGameId, // ⚠️ Aqui você usa o ID real
         });
       }
     }
+
+    return newGameId;
   }
 
   static async updateGame(data: GameData): Promise<void> {

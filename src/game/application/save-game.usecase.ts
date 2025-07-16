@@ -5,13 +5,13 @@ export async function saveGameUseCase(data: GameData, userId: string) {
     const game = await GameRepository.getGameByPlayerId(userId);
 
     if (game) {
-      await GameRepository.createGame(data);
+      await GameRepository.updateGame(data);
       return { status: 200, message: "success" };
     }
-    await GameRepository.updateGame(data);
-
+    await GameRepository.createGame(data);
     return { status: 200, message: "success" };
   } catch (error) {
+    console.log(error);
     return { status: 500, message: "error" };
   }
 }
