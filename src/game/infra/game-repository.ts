@@ -98,7 +98,7 @@ export class GameRepository {
 
     return unit[0];
   }
-  static async createGame(data: GameData): Promise<number> {
+  static async createGame(data: GameData, playerId: string): Promise<number> {
     const [created] = await db
       .insert(gamesTable)
       .values({
@@ -110,7 +110,7 @@ export class GameRepository {
         lastTimeBaseSpawned: data.lastTimeBaseSpawned,
         unlockedUnits: data.unlockedUnits,
         ownedUnits: data.ownedUnits,
-        playerId: data.playerId,
+        playerId: playerId,
       })
       .returning({ id: gamesTable.id });
 
@@ -131,7 +131,7 @@ export class GameRepository {
           lastTimeCollected: unit.lastTimeCollected,
           isReady: unit.isReady,
           available: unit.available,
-          gameId: newGameId, // ⚠️ Aqui você usa o ID real
+          gameId: newGameId,
         });
       }
     }

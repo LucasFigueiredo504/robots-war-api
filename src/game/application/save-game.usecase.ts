@@ -8,7 +8,7 @@ export async function saveGameUseCase(data: GameData, userId: string) {
       await GameRepository.updateGame(data);
       return { status: 200, message: "success" };
     }
-    await GameRepository.createGame(data);
+    await GameRepository.createGame(data, userId);
     return { status: 200, message: "success" };
   } catch (error) {
     console.log(error);

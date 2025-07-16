@@ -29,8 +29,8 @@ app.get(
     preHandler: [app.authenticate],
   },
   async (request: FastifyRequest, reply: FastifyReply) => {
-    const { playerId } = request.body as { playerId: string };
-    const result = await loadGameUseCase(playerId);
+    const userId = (request.user as any).id;
+    const result = await loadGameUseCase(userId);
 
     if (result.status != 200) {
       return reply.status(500).send({ message: "Erro" });
