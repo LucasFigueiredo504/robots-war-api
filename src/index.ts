@@ -1,10 +1,26 @@
-import fastify from "fastify";
+import fastify, { FastifyRequest } from "fastify";
 import jwt from "@fastify/jwt";
+import fastifyRateLimit from "@fastify/rate-limit";
 
 export const app = fastify();
 
 app.register(jwt, {
   secret: process.env.JWT_SECRET || "supersecret",
+});
+
+app.register(fastifyRateLimit, {
+  max: 50,
+  timeWindow: "1 minute",
+  keyGenerator: (request: FastifyRequest) => request.ip,
+  errorResponseBuilder: (req, context) => {
+    return {
+      statusCode: 429,
+      error: "Too Many Requests",
+      message: `Rate limit exceeded, retry in ${Math.round(
+        context.ttl / 1000
+      )} seconds`,
+    };
+  },
 });
 
 const PORT = process.env.PORT || 3333;
