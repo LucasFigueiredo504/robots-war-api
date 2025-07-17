@@ -1,6 +1,3 @@
-import { and, eq, inArray } from "drizzle-orm";
-import { db } from "../../db";
-import { gamesTable, unitsTable } from "../../db/schema";
 import { GameRepository } from "../infra/game-repository";
 
 export async function getGameUnit(unitId: number, gameId: number) {

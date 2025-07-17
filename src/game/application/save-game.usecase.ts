@@ -1,11 +1,14 @@
-import { eq } from "drizzle-orm";
-import { db } from "../../db";
-import { unitsTable } from "../../db/schema";
 import { GameData, GameRepository } from "../infra/game-repository";
 
-export async function saveGameUseCase(data: GameData) {
+export async function saveGameUseCase(data: GameData, userId: string) {
   try {
-    await GameRepository.saveGame(data);
+    const game = await GameRepository.getGameByPlayerId(userId);
+
+    if (game) {
+      await GameRepository.createGame(data);
+      return { status: 200, message: "success" };
+    }
+    await GameRepository.updateGame(data);
 
     return { status: 200, message: "success" };
   } catch (error) {

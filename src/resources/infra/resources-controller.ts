@@ -5,6 +5,9 @@ import { collectResourceFromUserUnit } from "../application/collect-resource-fro
 
 app.post(
   "/game/resource/collect",
+  {
+    preHandler: [app.authenticate],
+  },
   async (request: FastifyRequest, reply: FastifyReply) => {
     const { gameId, collectorId } = request.body as {
       gameId: number;

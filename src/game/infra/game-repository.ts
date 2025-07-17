@@ -98,49 +98,82 @@ export class GameRepository {
 
     return unit[0];
   }
-  static async saveGame(data: GameData): Promise<void> {
-    // Start a transaction to ensure both game and units are saved together
-    await db.transaction(async (tx) => {
-      // Update the game data
-      await tx
-        .update(gamesTable)
-        .set({
-          gold: data.gold,
-          metal: data.metal,
-          fuel: data.fuel,
-          level: data.level,
-          lastOnline: data.lastOnline,
-          lastTimeBaseSpawned: data.lastTimeBaseSpawned,
-          unlockedUnits: data.unlockedUnits,
-          ownedUnits: data.ownedUnits,
-        })
-        .where(eq(gamesTable.id, data.id));
-
-      // If there are units to save
-      if (data.units && data.units.length > 0) {
-        // First, delete existing units for this game (optional, depends on your needs)
-        await tx.delete(unitsTable).where(eq(unitsTable.gameId, data.id));
-
-        // Then insert all the new units
-        for (const unit of data.units) {
-          await tx.insert(unitsTable).values({
-            posX: unit.posX,
-            posY: unit.posY,
-            level: unit.level,
-            currentHp: unit.currentHp,
-            currentLevel: unit.currentLevel,
-            typeId: unit.typeId,
-            instanceId: unit.instanceId,
-            resourceAmount: unit.resourceAmount,
-            lastTimeCollected: unit.lastTimeCollected,
-            isReady: unit.isReady,
-            available: unit.available,
-            gameId: data.id,
-          });
-        }
-      }
+  static async createGame(data: GameData): Promise<void> {
+    // Insere o jogo no banco
+    await db.insert(gamesTable).values({
+      gold: data.gold,
+      metal: data.metal,
+      fuel: data.fuel,
+      level: data.level,
+      lastOnline: data.lastOnline,
+      lastTimeBaseSpawned: data.lastTimeBaseSpawned,
+      unlockedUnits: data.unlockedUnits,
+      ownedUnits: data.ownedUnits,
+      playerId: data.playerId,
     });
+
+    // Insere as unidades (se houver)
+    if (data.units && data.units.length > 0) {
+      for (const unit of data.units) {
+        await db.insert(unitsTable).values({
+          posX: unit.posX,
+          posY: unit.posY,
+          level: unit.level,
+          currentHp: unit.currentHp,
+          currentLevel: unit.currentLevel,
+          typeId: unit.typeId,
+          instanceId: unit.instanceId,
+          resourceAmount: unit.resourceAmount,
+          lastTimeCollected: unit.lastTimeCollected,
+          isReady: unit.isReady,
+          available: unit.available,
+          gameId: data.id,
+        });
+      }
+    }
   }
+
+  static async updateGame(data: GameData): Promise<void> {
+    // Atualiza o jogo
+    await db
+      .update(gamesTable)
+      .set({
+        gold: data.gold,
+        metal: data.metal,
+        fuel: data.fuel,
+        level: data.level,
+        lastOnline: data.lastOnline,
+        lastTimeBaseSpawned: data.lastTimeBaseSpawned,
+        unlockedUnits: data.unlockedUnits,
+        ownedUnits: data.ownedUnits,
+      })
+      .where(eq(gamesTable.id, data.id));
+
+    // Atualiza as unidades
+    if (data.units && data.units.length > 0) {
+      // Remove todas as unidades anteriores
+      await db.delete(unitsTable).where(eq(unitsTable.gameId, data.id));
+
+      // Insere as unidades novas
+      for (const unit of data.units) {
+        await db.insert(unitsTable).values({
+          posX: unit.posX,
+          posY: unit.posY,
+          level: unit.level,
+          currentHp: unit.currentHp,
+          currentLevel: unit.currentLevel,
+          typeId: unit.typeId,
+          instanceId: unit.instanceId,
+          resourceAmount: unit.resourceAmount,
+          lastTimeCollected: unit.lastTimeCollected,
+          isReady: unit.isReady,
+          available: unit.available,
+          gameId: data.id,
+        });
+      }
+    }
+  }
+
   static async getGame(gameId: number): Promise<GameData | null> {
     const result = await db
       .select()
