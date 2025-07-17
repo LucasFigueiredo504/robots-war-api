@@ -11,6 +11,7 @@ const PORT = process.env.PORT || 3333;
 
 const start = async () => {
   try {
+    await import("./decorators");
     await import("./game/infra/game-state-controller");
     await import("./auth/infra/auth-controller");
     await import("./resources/infra/resources-controller");
