@@ -53,7 +53,7 @@ export class GameRepository {
       .from(unitsTable)
       .where(
         and(
-          inArray(unitsTable.id, game.ownedUnits ?? []),
+          //inArray(unitsTable.id, game.ownedUnits ?? []),
           eq(unitsTable.gameId, gameId)
         )
       );

@@ -38,6 +38,20 @@ app.get(
     return reply.status(200).send({ message: "success", data: result });
   }
 );
+app.post(
+  "/game/loadp",
+  async (request: FastifyRequest, reply: FastifyReply) => {
+    const { data } = request.body as { data: { id: string } };
+    const result = await loadGameUseCase(data.id);
+
+    if (result.status !== 200) {
+      return reply.status(500).send({ message: "Erro" });
+    }
+
+    return reply.status(200).send({ message: "success", data: result });
+  }
+);
+
 app.get("/game/alive", async (request: FastifyRequest, reply: FastifyReply) => {
   return reply.status(200).send({ message: "I am alive" });
 });

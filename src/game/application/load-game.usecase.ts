@@ -16,7 +16,10 @@ export async function loadGameUseCase(playerId: string) {
 
     const dateNow = new Date();
 
-    const updatedUnits = await Promise.all(
+    const updatedUnitsMap = new Map<string, any>();
+
+    // Update only collector units
+    Promise.all(
       units
         .filter((unit) => collectorTypes.includes(Number(unit.typeId)))
         .map(async (unit) => {
@@ -37,21 +40,32 @@ export async function loadGameUseCase(playerId: string) {
             newResourceAmount
           );
 
-          return {
+          const updatedUnit = {
             ...unit,
             resourceAmount: newResourceAmount,
             lastTimeCollected: dateNow.toISOString(),
           };
+
+          updatedUnitsMap.set(unit.id, updatedUnit);
+          return updatedUnit;
         })
+    );
+
+    // Combine updated and non-updated units
+    const finalUnits = units.map((unit) =>
+      updatedUnitsMap.has(unit.id) ? updatedUnitsMap.get(unit.id) : unit
     );
 
     return {
       status: 200,
       message: "success",
-      game,
-      updatedUnits,
+      data: {
+        ...game,
+        units: finalUnits,
+      },
     };
   } catch (error) {
+    console.log(error);
     return { status: 500, message: "error" };
   }
 }
