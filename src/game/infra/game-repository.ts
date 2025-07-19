@@ -139,7 +139,7 @@ export class GameRepository {
     return newGameId;
   }
 
-  static async updateGame(data: GameData): Promise<void> {
+  static async updateGame(data: GameData, gameId: number): Promise<void> {
     // Atualiza o jogo
     await db
       .update(gamesTable)
@@ -153,12 +153,12 @@ export class GameRepository {
         unlockedUnits: data.unlockedUnits,
         ownedUnits: data.ownedUnits,
       })
-      .where(eq(gamesTable.id, data.id));
+      .where(eq(gamesTable.id, gameId));
 
     // Atualiza as unidades
     if (data.units && data.units.length > 0) {
       // Remove todas as unidades anteriores
-      await db.delete(unitsTable).where(eq(unitsTable.gameId, data.id));
+      await db.delete(unitsTable).where(eq(unitsTable.gameId, gameId));
 
       // Insere as unidades novas
       for (const unit of data.units) {
@@ -174,7 +174,7 @@ export class GameRepository {
           lastTimeCollected: unit.lastTimeCollected,
           isReady: unit.isReady,
           available: unit.available,
-          gameId: data.id,
+          gameId: gameId,
         });
       }
     }
