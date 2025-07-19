@@ -11,7 +11,7 @@ export type UnitRecord = {
   currentLevel: string;
   typeId: number;
   instanceId: string;
-  resourceAmount: string;
+  resourceAmount: number | null;
   isReady: boolean | null;
   available: boolean | null;
   lastTimeCollected?: Date | null;
@@ -127,7 +127,7 @@ export class GameRepository {
           currentLevel: unit.currentLevel,
           typeId: unit.typeId,
           instanceId: unit.instanceId,
-          resourceAmount: unit.resourceAmount,
+          resourceAmount: Number(unit.resourceAmount),
           lastTimeCollected: unit.lastTimeCollected,
           isReady: unit.isReady,
           available: unit.available,
@@ -170,7 +170,7 @@ export class GameRepository {
           currentLevel: unit.currentLevel,
           typeId: unit.typeId,
           instanceId: unit.instanceId,
-          resourceAmount: unit.resourceAmount,
+          resourceAmount: Number(unit.resourceAmount),
           lastTimeCollected: unit.lastTimeCollected,
           isReady: unit.isReady,
           available: unit.available,
@@ -208,7 +208,7 @@ export class GameRepository {
   ): Promise<void> {
     await db
       .update(unitsTable)
-      .set({ resourceAmount: String(amount) })
+      .set({ resourceAmount: amount })
       .where(eq(unitsTable.id, unitId));
   }
 }

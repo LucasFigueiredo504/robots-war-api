@@ -18,8 +18,9 @@ export async function loadGameUseCase(playerId: string) {
 
     const updatedUnitsMap = new Map<string, any>();
 
-    // Update only collector units
-    Promise.all(
+    // Use Promise.all to await all updates concurrently
+    await Promise.all(
+      // Added 'await' here to ensure all updates complete before continuing
       units
         .filter((unit) => collectorTypes.includes(Number(unit.typeId)))
         .map(async (unit) => {
@@ -29,27 +30,28 @@ export async function loadGameUseCase(playerId: string) {
 
           const secondsElapsed =
             (dateNow.getTime() - lastDate.getTime()) / 1000;
-          const accumulationRate = 1;
+          const accumulationRate = 1; // Assuming 1 unit per second for simplicity
           const accumulatedAmount =
             secondsElapsed * accumulationRate * Number(unit.level);
+
           const newResourceAmount =
-            accumulatedAmount + Number(unit.resourceAmount);
+            Math.floor(accumulatedAmount) + Number(unit.resourceAmount);
 
           await GameRepository.updateUnitResourcesAmount(
             unit.id,
-            newResourceAmount
+            newResourceAmount // This will now be an integer
           );
 
           const updatedUnit = {
             ...unit,
-            resourceAmount: newResourceAmount,
+            resourceAmount: newResourceAmount, // This will be an integer
             lastTimeCollected: dateNow.toISOString(),
           };
 
           updatedUnitsMap.set(unit.id, updatedUnit);
           return updatedUnit;
         })
-    );
+    ); // End of Promise.all
 
     // Combine updated and non-updated units
     const finalUnits = units.map((unit) =>
