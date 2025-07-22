@@ -1,6 +1,6 @@
 import { GameRepository } from "../infra/game-repository";
 
-const collectorTypes = [1, 2, 3];
+const collectorTypes = [6, 5, 4];
 
 export async function loadGameUseCase(playerId: string) {
   try {
@@ -15,49 +15,56 @@ export async function loadGameUseCase(playerId: string) {
     }
 
     const dateNow = new Date();
+    const updatedUnitsMap = new Map<number, any>();
 
-    const updatedUnitsMap = new Map<string, any>();
+    // Process collector units sequentially to avoid race conditions
+    for (const unit of units.filter((unit) =>
+      collectorTypes.includes(Number(unit.typeId))
+    )) {
+      const lastDate = unit.lastTimeCollected
+        ? new Date(unit.lastTimeCollected)
+        : new Date(dateNow);
 
-    // Use Promise.all to await all updates concurrently
-    await Promise.all(
-      // Added 'await' here to ensure all updates complete before continuing
-      units
-        .filter((unit) => collectorTypes.includes(Number(unit.typeId)))
-        .map(async (unit) => {
-          const lastDate = unit.lastTimeCollected
-            ? new Date(unit.lastTimeCollected)
-            : dateNow;
+      const secondsElapsed = Math.max(
+        0,
+        (dateNow.getTime() - lastDate.getTime()) / 1000
+      );
 
-          const secondsElapsed =
-            (dateNow.getTime() - lastDate.getTime()) / 1000;
-          const accumulationRate = 1; // Assuming 1 unit per second for simplicity
-          const accumulatedAmount =
-            secondsElapsed * accumulationRate * Number(unit.level);
+      const accumulationRate = 1; // 1 unit per second
+      const accumulatedAmount =
+        secondsElapsed * accumulationRate * Number(unit.level);
 
-          const newResourceAmount =
-            Math.floor(accumulatedAmount) + Number(unit.resourceAmount);
+      const newResourceAmount =
+        Math.floor(accumulatedAmount) + Number(unit.resourceAmount);
 
-          await GameRepository.updateUnitResourcesAmount(
-            unit.id,
-            newResourceAmount // This will now be an integer
-          );
+      console.log(
+        `Unit ${
+          unit.id
+        }: Last collected: ${lastDate.toISOString()}, Seconds elapsed: ${secondsElapsed}, Accumulated: ${Math.floor(
+          accumulatedAmount
+        )}, New total: ${newResourceAmount}`
+      );
 
-          const updatedUnit = {
-            ...unit,
-            resourceAmount: newResourceAmount, // This will be an integer
-            lastTimeCollected: dateNow.toISOString(),
-          };
+      // Update both resource amount AND lastTimeCollected in the database
+      await GameRepository.updateUnitResourcesAmount(
+        unit.id ?? 0,
+        newResourceAmount
+      );
 
-          updatedUnitsMap.set(unit.id, updatedUnit);
-          return updatedUnit;
-        })
-    );
+      const updatedUnit = {
+        ...unit,
+        resourceAmount: newResourceAmount,
+        lastTimeCollected: dateNow.toISOString(),
+      };
+
+      updatedUnitsMap.set(unit.id!, updatedUnit);
+      console.log(updatedUnitsMap);
+    }
 
     // Combine updated and non-updated units
     const finalUnits = units.map((unit) =>
-      updatedUnitsMap.has(unit.id) ? updatedUnitsMap.get(unit.id) : unit
+      updatedUnitsMap.has(unit.id!) ? updatedUnitsMap.get(unit.id!) : unit
     );
-
     return {
       status: 200,
       message: "success",
@@ -67,7 +74,7 @@ export async function loadGameUseCase(playerId: string) {
       },
     };
   } catch (error) {
-    console.log(error);
+    console.log("Error in loadGameUseCase:", error);
     return { status: 500, message: "error" };
   }
 }

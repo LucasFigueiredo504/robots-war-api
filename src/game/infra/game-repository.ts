@@ -211,4 +211,13 @@ export class GameRepository {
       .set({ resourceAmount: amount })
       .where(eq(unitsTable.id, unitId));
   }
+  static async updateUnitLastCollected(
+    unitId: number,
+    date: Date
+  ): Promise<void> {
+    await db
+      .update(unitsTable)
+      .set({ lastTimeCollected: date })
+      .where(eq(unitsTable.id, unitId));
+  }
 }
