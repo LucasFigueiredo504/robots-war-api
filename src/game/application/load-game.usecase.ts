@@ -1,6 +1,5 @@
+import { collectorTypes } from "../../const";
 import { GameRepository } from "../infra/game-repository";
-
-const collectorTypes = [6, 5, 4];
 
 export async function loadGameUseCase(playerId: string) {
   try {
