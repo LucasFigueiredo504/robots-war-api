@@ -51,7 +51,7 @@ export async function loadGameUseCase(playerId: string) {
           updatedUnitsMap.set(unit.id, updatedUnit);
           return updatedUnit;
         })
-    ); // End of Promise.all
+    );
 
     // Combine updated and non-updated units
     const finalUnits = units.map((unit) =>

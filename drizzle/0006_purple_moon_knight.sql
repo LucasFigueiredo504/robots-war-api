@@ -1,0 +1,1 @@
+ALTER TABLE "games" ADD COLUMN "parts_collected" numeric[] DEFAULT '{}';

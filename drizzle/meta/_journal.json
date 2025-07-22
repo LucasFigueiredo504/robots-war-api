@@ -43,6 +43,13 @@
       "when": 1752931459791,
       "tag": "0005_dear_carnage",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1753147226716,
+      "tag": "0006_purple_moon_knight",
+      "breakpoints": true
     }
   ]
 }

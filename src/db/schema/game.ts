@@ -17,6 +17,7 @@ export const gamesTable = pgTable("games", {
   lastOnline: timestamp("last_online").defaultNow(),
   lastTimeBaseSpawned: timestamp("last_time_base_spawned").defaultNow(),
   unlockedUnits: numeric("unlocked_units").array().default([]),
+  partsCollected: numeric("parts_collected").array().default([]),
   ownedUnits: integer("owned_units").array().default([]),
   playerId: varchar("player_id").notNull().unique(),
 });
