@@ -12,8 +12,7 @@ app.post(
   async (request: FastifyRequest, reply: FastifyReply) => {
     const { data } = request.body as { data: GameData };
     const userId = (request.user as any).id;
-
-    console.log("ID:", userId);
+    console.log(data);
     const result = await saveGameUseCase(data, userId);
 
     if (result.status != 200) {
