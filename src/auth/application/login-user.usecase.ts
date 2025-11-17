@@ -9,7 +9,7 @@ export async function loginUserUseCase(email: string, password: string) {
     if (!user) {
       return { status: 401, message: "Invalid credentials" };
     }
-    const doesPasswordMatch = bcrypt.compare(password, user.passwordHash);
+    const doesPasswordMatch = await bcrypt.compare(password, user.passwordHash);
 
     if (!doesPasswordMatch) {
       return { status: 401, message: "Invalid credentials" };
