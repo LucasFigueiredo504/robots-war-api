@@ -98,7 +98,7 @@ export class GameRepository {
 
     return unit[0];
   }
-  static async createGame(data: GameData, playerId: string): Promise<number> {
+  static async createGame(data: GameData, userId: string): Promise<number> {
     const [created] = await db
       .insert(gamesTable)
       .values({
@@ -110,7 +110,7 @@ export class GameRepository {
         lastTimeBaseSpawned: data.lastTimeBaseSpawned,
         unlockedUnits: data.unlockedUnits,
         ownedUnits: data.ownedUnits,
-        playerId: playerId,
+        playerId: userId,
       })
       .returning({ id: gamesTable.id });
 
