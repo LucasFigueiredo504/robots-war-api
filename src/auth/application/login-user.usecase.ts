@@ -7,12 +7,12 @@ export async function loginUserUseCase(email: string, password: string) {
     const user = await AuthRepository.findUserByEmail(email);
 
     if (!user) {
-      return { status: 401, message: "Invalid credentials" };
+      return { status: 404, message: "User not found" };
     }
     const doesPasswordMatch = await bcrypt.compare(password, user.passwordHash);
 
     if (!doesPasswordMatch) {
-      return { status: 401, message: "Invalid credentials" };
+      return { status: 400, message: "Invalid credentials" };
     }
 
     // Use fastify.jwt.sign
