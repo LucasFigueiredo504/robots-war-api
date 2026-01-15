@@ -7,7 +7,7 @@ export async function loadGameUseCase(playerId: string) {
     if (!game) {
       return { status: 404, message: "not found" };
     }
-
+    console.log("game id", game.id);
     const units = await GameRepository.getGameUnitsyByGameId(game.id);
     if (!units || units.length === 0) {
       return { status: 404, message: "not found" };

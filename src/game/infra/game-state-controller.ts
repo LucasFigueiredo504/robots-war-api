@@ -15,39 +15,19 @@ app.post(
     console.log(data);
     const result = await saveGameUseCase(data, userId);
 
-    if (result.status != 200) {
-      return reply.status(500).send({ message: "Erro" });
-    }
-    return reply.status(200).send({ message: "success" });
+    return reply.status(result.status).send({ message: result.message });
   }
 );
 
 app.get(
   "/game/load",
-  {
-    preHandler: [app.authenticate],
-  },
-  async (request: FastifyRequest, reply: FastifyReply) => {
+  { preHandler: [app.authenticate] },
+  async (request, reply) => {
     const userId = (request.user as any).id;
+
     const result = await loadGameUseCase(userId);
 
-    if (result.status != 200) {
-      return reply.status(500).send({ message: "Erro" });
-    }
-    return reply.status(200).send({ message: "success", data: result });
-  }
-);
-app.post(
-  "/game/loadp",
-  async (request: FastifyRequest, reply: FastifyReply) => {
-    const { data } = request.body as { data: { id: string } };
-    const result = await loadGameUseCase(data.id);
-
-    if (result.status !== 200) {
-      return reply.status(500).send({ message: "Erro" });
-    }
-
-    return reply.status(200).send({ message: "success", data: result });
+    return reply.status(result.status).send({ message: result.message });
   }
 );
 
